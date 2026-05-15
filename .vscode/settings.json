@@ -1,0 +1,12 @@
+{
+  "dotnetAcquisitionExtension.existingDotnetPath": [
+    {
+      "extensionId": "ms-dotnettools.csharp",
+      "path": "/home/yuu-matsuda/repository/freshman-training/conference-room-reservation-system/.dotnet/dotnet"
+    },
+    {
+      "extensionId": "ms-dotnettools.csdevkit",
+      "path": "/home/yuu-matsuda/repository/freshman-training/conference-room-reservation-system/.dotnet/dotnet"
+    }
+  ]
+}
