@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ConferenceRoomApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+79fb24ef66b4c58144538741b4a48bad879147d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+afb31d2cc9217a99c72a0ae85a839a8a53584abf")]
 [assembly: System.Reflection.AssemblyProductAttribute("ConferenceRoomApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ConferenceRoomApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

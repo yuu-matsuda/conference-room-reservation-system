@@ -3,6 +3,8 @@ using RoomApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
 builder.Services.AddDbContext<RoomContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
@@ -11,6 +13,15 @@ builder.Services.AddDbContext<RoomContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().WithMethods("PUT", "DELETE", "GET");
+                      });
+});
 
 var app = builder.Build();
 
@@ -24,6 +35,8 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
 

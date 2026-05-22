@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RoomApi.Models;
+using RoomApi.Dto;
 using Microsoft.EntityFrameworkCore;
 
 namespace RoomApi.Controllers;
@@ -33,20 +34,33 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Room>> PostRoom(Room room)
+    public async Task<ActionResult<Room>> PostRoom(CreateRoomDto createRoom)
     {
+        var room = new Room
+        {
+            Name = createRoom.Name,
+            Capacity = createRoom.Capacity,
+            Description = createRoom.Description,
+            CreatedAt = DateTime.UtcNow
+        };
+
         _context.Rooms.Add(room);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
     }
 
-    [HttpPatch("{id}")]
-    public async Task<ActionResult<Room>> PatchRoom(long id, Room room)
+    [HttpPut]
+    public async Task<ActionResult<Room>> PutRoom(CreateRoomDto createRoom)
     {
-        if(id != room.Id)
+        var room = new Room
         {
-            return BadRequest();
-        }
+            Id = createRoom.Id,
+            Name = createRoom.Name,
+            Capacity = createRoom.Capacity,
+            Description = createRoom.Description,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
          _context.Entry(room).State = EntityState.Modified;
         await _context.SaveChangesAsync();
         return NoContent();
