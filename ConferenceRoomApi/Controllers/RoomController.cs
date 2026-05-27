@@ -41,7 +41,8 @@ public class RoomController : ControllerBase
             Name = createRoom.Name,
             Capacity = createRoom.Capacity,
             Description = createRoom.Description,
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
         _context.Rooms.Add(room);
@@ -49,12 +50,12 @@ public class RoomController : ControllerBase
         return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
     }
 
-    [HttpPut]
-    public async Task<ActionResult<Room>> PutRoom(CreateRoomDto createRoom)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<Room>> PutRoom(long id, CreateRoomDto createRoom)
     {
         var room = new Room
         {
-            Id = createRoom.Id,
+            Id = id,
             Name = createRoom.Name,
             Capacity = createRoom.Capacity,
             Description = createRoom.Description,

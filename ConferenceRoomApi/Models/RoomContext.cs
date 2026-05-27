@@ -10,4 +10,5 @@ public class RoomContext : DbContext
     }
 
     public DbSet<Room> Rooms { get; set; } = null!;
+    public DbSet<Reservation> Reservations { get; set; } = null!;
 }
