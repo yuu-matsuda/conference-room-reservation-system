@@ -53,16 +53,11 @@ public class RoomController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<Room>> PutRoom(long id, CreateRoomDto createRoom)
     {
-        var room = new Room
-        {
-            Id = id,
-            Name = createRoom.Name,
-            Capacity = createRoom.Capacity,
-            Description = createRoom.Description,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-         _context.Entry(room).State = EntityState.Modified;
+        var room = await _context.Rooms.FindAsync(id);
+            room.Name = createRoom.Name;
+            room.Capacity = createRoom.Capacity;
+            room.Description = createRoom.Description;
+            room.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return NoContent();
     }

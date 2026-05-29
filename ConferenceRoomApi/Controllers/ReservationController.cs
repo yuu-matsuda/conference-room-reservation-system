@@ -1,7 +1,9 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using RoomApi.Models;
 using RoomApi.Dto;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace RoomApi.Controllers;
 
@@ -39,7 +41,7 @@ public class ReservationController : ControllerBase
         var room = await _context.Rooms.FindAsync(CreateReservation.RoomId);
         if (room == null)
         {
-            return NotFound("見つかりません");
+            return NotFound("会議室が見つかりません");
         }
 
         var reservation = new Reservation
@@ -52,6 +54,19 @@ public class ReservationController : ControllerBase
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
+
+        if(reservation.StartAt > reservation.EndAt){
+            return BadRequest("時刻の設定に誤りがあります");
+        }
+        var reservationList = await _context.Reservations.ToListAsync();
+        var result = reservationList.Where(r => r.RoomId == reservation.RoomId).ToList();
+        var errorReservation = result
+        .Where(r => reservation.StartAt < r.EndAt && r.StartAt < reservation.EndAt)
+        .ToList();
+
+        if(errorReservation.Count > 0){
+            return BadRequest("設定された時刻には既に予約があります");
+        }
 
         _context.Reservations.Add(reservation);
         await _context.SaveChangesAsync();

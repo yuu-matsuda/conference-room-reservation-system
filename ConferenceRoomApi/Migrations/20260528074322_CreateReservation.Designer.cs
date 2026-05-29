@@ -12,7 +12,7 @@ using RoomApi.Models;
 namespace ConferenceRoomApi.Migrations
 {
     [DbContext(typeof(RoomContext))]
-    [Migration("20260526020114_CreateReservation")]
+    [Migration("20260528074322_CreateReservation")]
     partial class CreateReservation
     {
         /// <inheritdoc />
