@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RoomApi.Models;
+using RoomApi.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +9,8 @@ var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddDbContext<RoomContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
-// Add services to the container.
-
+builder.Services.AddScoped<ReservationService>();
+builder.Services.AddScoped<RoomService>();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -19,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
                       policy  =>
                       {
-                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().WithMethods("PUT", "DELETE", "GET");
+                          policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
                       });
 });
 

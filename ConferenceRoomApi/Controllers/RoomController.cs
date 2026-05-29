@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using RoomApi.Models;
 using RoomApi.Dto;
 using Microsoft.EntityFrameworkCore;
+using RoomApi.Service;
 
 namespace RoomApi.Controllers;
 
@@ -10,10 +11,12 @@ namespace RoomApi.Controllers;
 public class RoomController : ControllerBase
 {
     private readonly RoomContext _context;
+    private readonly RoomService _roomService;
 
-    public RoomController(RoomContext context)
+    public RoomController(RoomContext context, RoomService roomService)
     {
         _context = context;
+        _roomService = roomService;
     }
 
     [HttpGet]
@@ -34,29 +37,28 @@ public class RoomController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Room>> PostRoom(CreateRoomDto createRoom)
+    public async Task<ActionResult<Room>> PostRoom(CreateRoomDto dto)
     {
-        var room = new Room
+        var result = await _roomService.CreateAsync(dto);
+        if (result == null)
         {
-            Name = createRoom.Name,
-            Capacity = createRoom.Capacity,
-            Description = createRoom.Description,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        _context.Rooms.Add(room);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetRoom), new { id = room.Id }, room);
+            return BadRequest();
+        }
+        return CreatedAtAction(nameof(GetRoom), new { id = result.Id }, result);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Room>> PutRoom(long id, CreateRoomDto createRoom)
+    public async Task<ActionResult<Room>> PutRoom(long id, CreateRoomDto dto)
     {
         var room = await _context.Rooms.FindAsync(id);
-            room.Name = createRoom.Name;
-            room.Capacity = createRoom.Capacity;
-            room.Description = createRoom.Description;
+        if (room == null)
+        {
+            return NotFound();
+        }
+        
+            room.Name = dto.Name;
+            room.Capacity = dto.Capacity;
+            room.Description = dto.Description;
             room.UpdatedAt = DateTime.UtcNow;
         await _context.SaveChangesAsync();
         return NoContent();

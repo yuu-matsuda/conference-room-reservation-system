@@ -4,6 +4,7 @@ using RoomApi.Models;
 using RoomApi.Dto;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using RoomApi.Service;
 
 namespace RoomApi.Controllers;
 
@@ -12,10 +13,12 @@ namespace RoomApi.Controllers;
 public class ReservationController : ControllerBase
 {
     private readonly RoomContext _context;
+    private readonly ReservationService _reservationService;
 
-    public ReservationController(RoomContext context)
+    public ReservationController(RoomContext context, ReservationService reservationService)
     {
         _context = context;
+        _reservationService = reservationService;
     }
 
     [HttpGet]
@@ -36,66 +39,20 @@ public class ReservationController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Reservation>> PostRoom(CreateReservationDto CreateReservation)
+    public async Task<ActionResult<Reservation>> PostReservation(CreateReservationDto dto)
     {
-        var room = await _context.Rooms.FindAsync(CreateReservation.RoomId);
-        if (room == null)
+        var result = await _reservationService.CreateAsync(dto);
+
+        if (result.Reservation == null)
         {
-            return NotFound("会議室が見つかりません");
+            return BadRequest(new { message = result.Message });
         }
 
-        var reservation = new Reservation
-        {
-            RoomName = room.Name,
-            RoomId = CreateReservation.RoomId,
-            Title = CreateReservation.Title,
-            StartAt = CreateReservation.StartAt,
-            EndAt = CreateReservation.EndAt,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-
-        if(reservation.StartAt > reservation.EndAt){
-            return BadRequest("時刻の設定に誤りがあります");
-        }
-        var reservationList = await _context.Reservations.ToListAsync();
-        var result = reservationList.Where(r => r.RoomId == reservation.RoomId).ToList();
-        var errorReservation = result
-        .Where(r => reservation.StartAt < r.EndAt && r.StartAt < reservation.EndAt)
-        .ToList();
-
-        if(errorReservation.Count > 0){
-            return BadRequest("設定された時刻には既に予約があります");
-        }
-
-        _context.Reservations.Add(reservation);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetReservation), new { id = reservation.Id }, reservation);
-    }
-
-    [HttpPut("{id}")]
-    public async Task<ActionResult<Reservation>> PutRoom(long id, CreateReservationDto reservationDto)
-    {
-        var room = await _context.Rooms.FindAsync(reservationDto.RoomId);
-        if (room == null)
-        {
-            return NotFound();
-        }
-
-        var reservation = new Reservation
-        {
-            Id = id,
-            RoomId = reservationDto.RoomId,
-            RoomName = room.Name,
-            Title = reservationDto.Title,
-            StartAt = reservationDto.StartAt,
-            EndAt = reservationDto.EndAt,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
-        };
-         _context.Entry(reservation).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return NoContent();
+        return CreatedAtAction(
+            nameof(GetReservation),
+            new { id = result.Reservation.Id },
+            result.Reservation
+        );
     }
     
     [HttpDelete("{id}")]
