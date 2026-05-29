@@ -1,0 +1,8 @@
+bin/
+obj/
+*.dll
+
+ConferenceRoomApi.AssemblyInfo.cs
+ConferenceRoomApi.AssemblyInfoInputs.cache
+ConferenceRoomApi.csproj.CoreCompileInputs.cache
+ConferenceRoomApi.sourcelink.json
